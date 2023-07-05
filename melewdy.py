@@ -5,9 +5,9 @@ import musicControl
 TOKEN = secret.BOT_TOKEN
 
 intents = discord.Intents.all()
-client = discord.Client(intents=intents)
+melewdyBot = discord.Client(intents=intents)
 
-tree = discord.app_commands.CommandTree(client)
+tree = discord.app_commands.CommandTree(melewdyBot)
 
 class MyGroup(discord.app_commands.Group):
     @discord.app_commands.command(name="greet", description="Say hello")
@@ -17,13 +17,13 @@ class MyGroup(discord.app_commands.Group):
 sub1 = MyGroup(name="group", description="A test for cmd group")
 
 
-@client.event
+@melewdyBot.event
 async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    print(f'{melewdyBot.user} has connected to Discord!')
     # sync slash commands
     tree.add_command(sub1)
     await musicControl.setup(tree)
     await tree.sync()
     # await sub1.sync(guild=discord.Object(id=secret.TESTING_SERVER_ID)) 
 
-client.run(TOKEN)
+melewdyBot.run(TOKEN)

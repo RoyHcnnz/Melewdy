@@ -1,8 +1,31 @@
+from asyncio import sleep
+import os
 import discord
+import musicPlayer
+# all discord side funtionality
 
-@discord.app_commands.command(name = "play", description = "Continue playing current playlist")
-async def play(interaction):
-    await interaction.response.send_message("play")
+ydl = musicPlayer.getDownloader()
+
+@discord.app_commands.command(name = "play", description = "Start/continue playing current playlist")
+@discord.app_commands.describe(url="A youtube URL to play")
+async def play(interaction, url: str):
+    data = ydl.extract_info(url)
+    if interaction.user.voice == None:
+        await interaction.response.send(str(interaction.author.name) + "is not in a voice channel.")
+
+    else:
+        
+        voice_channel = interaction.user.voice.channel
+        vc = await voice_channel.connect()
+        musicPath = os.getcwd() + '/downloads/' + data["extractor"] + "-" + data["id"] + "-" + data["title"]+ "." + data["ext"] 
+        print(musicPath)
+        vc.play(discord.FFmpegPCMAudio(source=musicPath))
+        # Sleep while audio is playing.
+        while vc.is_playing():
+            await sleep(.1)
+        await vc.disconnect()
+    # Delete command after the audio is done playing.
+    # await ctx.message.delete()
 
 @discord.app_commands.command(name = "pause", description = "Pause current song")
 async def pause(interaction):
